@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Listado de Productos{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Listado de Productos</h1>
+
+    <!-- Botones de registrar y exportar a excel -->
+    <div class="mb-3">
+        <a href="{{ path('producto_nuevo') }}" class="btn btn-primary">Registrar Producto</a>
+        <a href="{{ path('producto_exportar') }}" class="btn btn-dark">Exportar a Excel</a>
+    </div>
+
+    <!-- Tabla de productos -->
+    <table id="tabla-productos" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Editar / Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.idProducto }}</td>
+                <td>{{ producto.claveProducto }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>${{ producto.precio | number_format(2, '.', ',') }}</td>
+                <td>
+                    <!-- Botón para editar -->
+                    <a href="{{ path('producto_editar', { id: producto.idProducto }) }}" class="btn btn-warning btn-sm">Editar</a>
+                    
+                    <!-- Botón para eliminar -->
+                    <form method="post" action="{{ path('producto_eliminar', { id: producto.idProducto }) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar este producto?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ producto.idProducto) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Scripts para DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tabla-productos').DataTable();
+    });
+</script>
+{% endblock %}
